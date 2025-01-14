@@ -447,6 +447,8 @@
       imageInput.addEventListener("change", (event) => {
         const file = event.target.files[0]; // Get the selected file
 
+        console.log("file ### ", file);
+
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
         if (file.size > MAX_FILE_SIZE) {
           alert("File size exceeds 5 MB. Please upload a smaller image.");
@@ -458,6 +460,31 @@
         // Check if a file is selected and it's an image
         if (file && file.type.startsWith("image/")) {
           const objectURL = URL.createObjectURL(file); // Generate a temporary URL
+
+          const img = new Image();
+          img.onload = function () {
+            // Get the image dimensions
+            const width = img.width;
+            const height = img.height;
+
+            // Calculate aspect ratio
+            const aspectRatio = height / width;
+
+            // Set the height of the preview element based on the width and aspect ratio
+            const previewWidth = preview.offsetWidth; // Current width of the preview
+            const previewHeight = previewWidth * aspectRatio; // Calculate height
+
+            preview.style.height = `${previewHeight}px`; // Set the height dynamically
+          };
+          img.onerror = function () {
+            alert(
+              "Failed to load the image. Please select a valid image file."
+            );
+          };
+
+          // Set the source of the Image object
+          img.src = objectURL;
+
           root.style.setProperty("--image-url", `url(${objectURL})`);
         } else {
           // Clear the background image if no file is selected or it's not an image
